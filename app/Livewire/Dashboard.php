@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Community;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class Dashboard extends Component
@@ -15,7 +16,7 @@ class Dashboard extends Component
 
     public function mount(): void
     {
-        $this->communities = auth()->user()->ownedCommunities;
+        $this->communities = Auth::user()->communities;
     }
 
     public function render()

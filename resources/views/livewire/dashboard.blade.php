@@ -47,6 +47,13 @@
                             {{ $community->name }}
                         </h2>
                         <p class="">{{ $community->description }}</p>
+                        @if ($community->isOwnedBy(Auth::user()))
+                            <p
+                                class="mt-2 text-sm text-gray-600 dark:text-gray-300"
+                            >
+                                You are the owner of this community.
+                            </p>
+                        @endif
                     </li>
                 </a>
             @endforeach

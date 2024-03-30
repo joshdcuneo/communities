@@ -7,49 +7,31 @@ use App\Models\User;
 
 class CommunityPolicy
 {
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Community $community): bool
     {
-        return $user->owns($community);
+        return $community->isMember($user);
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
         return true;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, Community $community): bool
     {
         return $user->owns($community);
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Community $community): bool
     {
         return $user->owns($community);
     }
 
-    /**
-     * Determine whether the user can restore the model.
-     */
     public function restore(User $user, Community $community): bool
     {
         return $user->owns($community);
     }
 
-    /**
-     * Determine whether the user can permanently delete the model.
-     */
     public function forceDelete(User $user, Community $community): bool
     {
         return false;

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Community;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -13,9 +14,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
+        $user = User::factory()->create([
             'name' => 'Josh Cuneo',
             'email' => 'josh@critical.codes',
         ]);
+
+        Community::factory()->forOwner($user)->create()->addMember($user);
+        Community::factory()->create()->addMember($user);
     }
 }

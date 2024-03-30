@@ -2,17 +2,23 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
-
 use App\Models\Concerns\IsOwned;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @property int|null $id
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Collection<int, Community> $ownedCommunities
+ * @property Collection<int, Member> $memberships
+ * @property Collection<int, Community> $communities
+ */
 class User extends Authenticatable
 {
     use HasApiTokens;
@@ -66,13 +72,33 @@ class User extends Authenticatable
         ];
     }
 
+    /**
+     * @return HasMany<Community>
+     */
+    public function ownedCommunities(): HasMany
+    {
+        return $this->hasMany(Community::class, 'owner_id');
+    }
+
+    /**
+     * @return HasMany<Member>
+     */
+    public function memberships(): HasMany
+    {
+        return $this->hasMany(Member::class);
+    }
+
+    /**
+     * @return HasMany<Community>
+     */
+    public function communities()
+    {
+        return $this->belongsToMany(Community::class, 'members')
+            ->as('membership');
+    }
+
     public function owns(IsOwned $model): bool
     {
         return $model->isOwnedBy($this);
-    }
-
-    public function ownedCommunities()
-    {
-        return $this->hasMany(Community::class, 'owner_id');
     }
 }

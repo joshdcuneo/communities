@@ -20,10 +20,12 @@ class CreateCommunity extends Component
     {
         $this->validate();
 
-        Auth::user()->ownedCommunities()->create([
+        $community = Auth::user()->ownedCommunities()->create([
             'name' => $this->name,
             'description' => $this->description,
         ]);
+
+        $community->addMember(Auth::user());
 
         session()->flash('status', 'Community created.');
 
