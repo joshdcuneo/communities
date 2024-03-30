@@ -18,7 +18,8 @@ use Illuminate\Support\Carbon;
  * @property Carbon|null $deleted_at
  * @property string|null $name
  * @property string|null $description
- * @property-read Collection<int, Member> $members
+ * @property-read Collection<int, CommunityMember> $members
+ * @property-read Collection<int, CommunityInvitation> $invitations
  * @property-read Collection<int, User> $memberUsers
  */
 class Community extends Model implements IsOwned
@@ -30,11 +31,19 @@ class Community extends Model implements IsOwned
     protected $fillable = ['name', 'description'];
 
     /**
-     * @return HasMany<Member>
+     * @return HasMany<CommunityMember>
      */
     public function members(): HasMany
     {
-        return $this->hasMany(Member::class);
+        return $this->hasMany(CommunityMember::class);
+    }
+
+    /**
+     * @return HasMany<CommunityInvitation>
+     */
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(CommunityInvitation::class);
     }
 
     /**
@@ -42,19 +51,30 @@ class Community extends Model implements IsOwned
      */
     public function memberUsers(): HasManyThrough
     {
-        return $this->hasManyThrough(User::class, Member::class);
+        return $this->hasManyThrough(User::class, CommunityMember::class);
     }
 
-    public function addMember(User $user): Member
+    public function addMember(User $user): CommunityMember
     {
         return $this->members()->create([
             'user_id' => $user->id,
         ]);
     }
 
+    public function addMemberByEmail(string $email): CommunityMember|CommunityInvitation
+    {
+        if ($user = User::where('email', $email)->first()) {
+            return $this->addMember($user);
+        }
+
+        return $this->invitations()->firstOrCreate([
+            'email' => $email,
+        ]);
+    }
+
     public function isMember(User $user): bool
     {
-        return $this->members->contains(function (Member $member) use ($user) {
+        return $this->members->contains(function (CommunityMember $member) use ($user) {
             return $member->isUser($user);
         });
     }

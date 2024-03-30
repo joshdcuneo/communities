@@ -16,7 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Collection<int, Community> $ownedCommunities
- * @property Collection<int, Member> $memberships
+ * @property Collection<int, CommunityMember> $memberships
  * @property Collection<int, Community> $communities
  */
 class User extends Authenticatable
@@ -81,11 +81,11 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<Member>
+     * @return HasMany<CommunityMember>
      */
     public function memberships(): HasMany
     {
-        return $this->hasMany(Member::class);
+        return $this->hasMany(CommunityMember::class);
     }
 
     /**
@@ -93,7 +93,7 @@ class User extends Authenticatable
      */
     public function communities()
     {
-        return $this->belongsToMany(Community::class, 'members')
+        return $this->belongsToMany(Community::class, 'community_members')
             ->as('membership');
     }
 

@@ -29,8 +29,9 @@
                 </x-link-button>
             </div>
         </div>
+        <x-section-border />
     </section>
-    <x-section-border />
+
     <section class="mx-auto max-w-7xl sm:px-6 lg:px-8">
         <ul class="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
             @foreach ($communities as $community)

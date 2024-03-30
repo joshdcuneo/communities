@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Exception;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
  * @property int|null $id
@@ -13,21 +15,39 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property Carbon|null $deleted_at
  * @property int|null $user_id
  * @property int|null $community_id
- * @property-read User|null $user
  * @property-read Community|null $community
  */
-class Member extends Model
+class CommunityMember extends Model
 {
     use HasFactory;
 
     protected $fillable = ['user_id', 'community_id'];
 
-    /**
-     * @return BelongsTo<User>
-     */
-    public function user(): BelongsTo
+    protected $hidden = ['confidentialUser'];
+
+    public function user(): void
     {
-        return $this->belongsTo(User::class);
+        throw new Exception(
+            'You should not access user information directly from the community member. '
+        );
+    }
+
+    /**
+     * @return HasOne<User>
+     */
+    public function confidentialUser(): HasOne
+    {
+        return $this->hasOne(User::class, 'id', 'user_id');
+    }
+
+    public function preferredName(): string
+    {
+        return $this->confidentialUser->name ?? 'Unknown';
+    }
+
+    public function preferredContactEmail(): string
+    {
+        return $this->confidentialUser->email ?? 'Unknown';
     }
 
     /**
