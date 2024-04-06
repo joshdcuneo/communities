@@ -13,8 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('community_members', function (Blueprint $table) {
-            $table->id();
+        Schema::create('community_user', function (Blueprint $table) {
             $table->timestamps();
             $table->softDeletes();
             $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
@@ -27,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('community_members');
+        Schema::dropIfExists('community_user');
     }
 };

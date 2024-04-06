@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Community>
+ *
+ * @method static self hasInvitiations(int $count)
+ * @method static self hasUsers(int $count)
  */
 class CommunityFactory extends Factory
 {
@@ -26,8 +29,6 @@ class CommunityFactory extends Factory
 
     public function forOwner(User|UserFactory $user): static
     {
-        return $this->state([
-            'owner_id' => $user,
-        ]);
+        return $this->for($user, 'owner')->hasAttached($user);
     }
 }

@@ -12,7 +12,7 @@
         >
             <p>{{ $community->description }}</p>
 
-            @if ($community->members?->isNotEmpty())
+            @if ($community->users?->isNotEmpty())
                 <section>
                     <h3
                         class="my-2 text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200"
@@ -20,10 +20,18 @@
                         Members
                     </h3>
                     <ul>
-                        @foreach ($community->members as $member)
+                        @foreach ($community->users as $member)
                             <li>
-                                {{ $member->isUser(Auth::user()) ? 'You' : $member->preferredName() }}
-                                ({{ $member->preferredContactEmail() }})
+                                {{ $member->is(Auth::user()) ? 'You' : $member->name }}
+                                ({{ $member->email }})
+                                @unless ($community->isOwnedBy($member))
+                                    <button
+                                        aria-label="Remove member {{ $member->email }}"
+                                        wire:click="removeMember({{ $member->id }})"
+                                    >
+                                        x
+                                    </button>
+                                @endunless
                             </li>
                         @endforeach
                     </ul>

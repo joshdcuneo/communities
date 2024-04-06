@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Concerns\IsOwned;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -16,7 +17,7 @@ use Laravel\Sanctum\HasApiTokens;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property Collection<int, Community> $ownedCommunities
- * @property Collection<int, CommunityMember> $memberships
+ * @property Collection<int, CommunityUser> $memberships
  * @property Collection<int, Community> $communities
  */
 class User extends Authenticatable
@@ -81,20 +82,13 @@ class User extends Authenticatable
     }
 
     /**
-     * @return HasMany<CommunityMember>
+     * @return BelongsToMany<Community>
      */
-    public function memberships(): HasMany
+    public function communities(): BelongsToMany
     {
-        return $this->hasMany(CommunityMember::class);
-    }
-
-    /**
-     * @return HasMany<Community>
-     */
-    public function communities()
-    {
-        return $this->belongsToMany(Community::class, 'community_members')
-            ->as('membership');
+        return $this->belongsToMany(Community::class)
+            ->using(CommunityUser::class)
+            ->as('communityMembership');
     }
 
     public function owns(IsOwned $model): bool

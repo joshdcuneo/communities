@@ -7,8 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\Features\SupportRedirects\Redirector;
+use Masmerise\Toaster\Toaster;
 
-class CreateCommunity extends Component
+class CommunityCreatePage extends Component
 {
     #[Validate('required|min:3|max:255')]
     public string $name = '';
@@ -25,17 +26,17 @@ class CreateCommunity extends Component
             'description' => $this->description,
         ]);
 
-        $community->addMember(Auth::user());
-
-        session()->flash('status', 'Community created.');
+        $community->users()->attach(Auth::user());
 
         $this->reset();
 
-        return redirect()->route('dashboard');
+        Toaster::success("Created community {$community->name}");
+
+        return redirect()->route('community.index');
     }
 
     public function render()
     {
-        return view('livewire.create-community');
+        return view('livewire.community-create-page');
     }
 }

@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'josh@critical.codes',
         ]);
 
-        Community::factory()->forOwner($user)->create()->addMember($user);
-        Community::factory()->create()->addMember($user);
+        Community::factory()->forOwner($user)->hasUsers(10)->create();
+        Community::factory()->hasAttached($user)->create();
     }
 }

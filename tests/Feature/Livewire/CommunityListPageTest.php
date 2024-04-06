@@ -2,14 +2,14 @@
 
 namespace Tests\Feature\Livewire;
 
-use App\Livewire\Dashboard;
+use App\Livewire\CommunityListPage;
 use App\Models\Community;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-class DashboardTest extends TestCase
+class CommunityListPageTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -17,13 +17,13 @@ class DashboardTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        $this->get(route('dashboard'))
-            ->assertSeeLivewire(Dashboard::class);
+        $this->get(route('community.index'))
+            ->assertSeeLivewire(CommunityListPage::class);
     }
 
     public function test_route_requires_authentication()
     {
-        $this->get(route('dashboard'))
+        $this->get(route('community.index'))
             ->assertRedirect(route('login'));
 
     }
@@ -32,30 +32,27 @@ class DashboardTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        Livewire::test(Dashboard::class)
+        Livewire::test(CommunityListPage::class)
             ->assertStatus(200);
     }
 
-    public function test_lists_owned_communities()
+    public function test_lists_communities()
     {
         $this->actingAs($user = User::factory()->create());
-        $communities = Community::factory()->count(3)->forOwner($user)->create();
+        $communities = Community::factory()->count(3)->hasAttached($user)->create();
 
-        $page = Livewire::test(Dashboard::class)
-            ->assertCount('communities', 3);
-
-        $communities->each(function ($community) use ($page) {
-            $page->assertSee($community->name);
-            $page->assertSee($community->description);
-        });
+        $page = Livewire::test(CommunityListPage::class)
+            ->assertCount('communities', 3)
+            ->assertSeeInOrder($communities->pluck('name')->toArray())
+            ->assertSeeInOrder($communities->pluck('description')->toArray());
     }
 
-    public function test_does_not_list_other_users_communities_without_permission()
+    public function test_does_not_list_communities_the_user_is_not_a_member_of()
     {
         $this->actingAs(User::factory()->create());
         Community::factory()->count(3)->create();
 
-        Livewire::test(Dashboard::class)
+        Livewire::test(CommunityListPage::class)
             ->assertCount('communities', 0);
     }
 
@@ -63,7 +60,7 @@ class DashboardTest extends TestCase
     {
         $this->actingAs(User::factory()->create());
 
-        Livewire::test(Dashboard::class)
+        Livewire::test(CommunityListPage::class)
             ->assertSeeHtml('href="'.route('community.create').'"');
     }
 }

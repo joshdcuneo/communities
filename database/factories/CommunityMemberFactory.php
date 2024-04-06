@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CommunityInvitation>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\CommunityUser>
  */
-class CommunityInvitationFactory extends Factory
+class CommunityMemberFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,7 +17,6 @@ class CommunityInvitationFactory extends Factory
     public function definition(): array
     {
         return [
-            'email' => $this->faker->unique()->safeEmail(),
         ];
     }
 }

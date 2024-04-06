@@ -21,6 +21,12 @@
                     >
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    <x-nav-link
+                        href="{{ route('community.index') }}"
+                        :active="request()->routeIs('community.index')"
+                    >
+                        {{ __('Communities') }}
+                    </x-nav-link>
                 </div>
             </div>
 

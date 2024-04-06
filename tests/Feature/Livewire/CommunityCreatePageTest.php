@@ -2,13 +2,13 @@
 
 namespace Tests\Feature\Livewire;
 
-use App\Livewire\CreateCommunity;
+use App\Livewire\CommunityCreatePage;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Tests\TestCase;
 
-class CreateCommunityTest extends TestCase
+class CommunityCreatePageTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -17,7 +17,7 @@ class CreateCommunityTest extends TestCase
         $this->actingAs(User::factory()->create());
 
         $this->get(route('community.create'))
-            ->assertSeeLivewire(CreateCommunity::class);
+            ->assertSeeLivewire(CommunityCreatePage::class);
     }
 
     public function test_route_requires_authentication()
@@ -28,7 +28,7 @@ class CreateCommunityTest extends TestCase
 
     public function test_component_renders_successfully()
     {
-        Livewire::test(CreateCommunity::class)
+        Livewire::test(CommunityCreatePage::class)
             ->assertStatus(200);
     }
 
@@ -38,7 +38,7 @@ class CreateCommunityTest extends TestCase
 
         $this->assertNull($user->ownedCommunities()->first());
 
-        Livewire::test(CreateCommunity::class)
+        Livewire::test(CommunityCreatePage::class)
             ->set('name', 'My Community')
             ->set('description', 'This is my community.')
             ->call('save');
@@ -52,7 +52,7 @@ class CreateCommunityTest extends TestCase
     public function test_name_is_required()
     {
         Livewire::actingAs(User::factory()->create())
-            ->test(CreateCommunity::class)
+            ->test(CommunityCreatePage::class)
             ->set('description', 'This is my community.')
             ->call('save')
             ->assertHasErrors(['name' => 'required']);
@@ -61,7 +61,7 @@ class CreateCommunityTest extends TestCase
     public function test_description_is_required()
     {
         Livewire::actingAs(User::factory()->create())
-            ->test(CreateCommunity::class)
+            ->test(CommunityCreatePage::class)
             ->set('name', 'My Community')
             ->call('save')
             ->assertHasErrors(['description' => 'required']);
@@ -70,7 +70,7 @@ class CreateCommunityTest extends TestCase
     public function test_form_is_reset_after_save()
     {
         Livewire::actingAs(User::factory()->create())
-            ->test(CreateCommunity::class)
+            ->test(CommunityCreatePage::class)
             ->set('name', 'My Community')
             ->set('description', 'This is my community.')
             ->call('save')
@@ -78,23 +78,13 @@ class CreateCommunityTest extends TestCase
             ->assertSet('description', '');
     }
 
-    public function test_flash_message_is_set_after_save()
+    public function test_redirects_to_community_list_after_save()
     {
         Livewire::actingAs(User::factory()->create())
-            ->test(CreateCommunity::class)
+            ->test(CommunityCreatePage::class)
             ->set('name', 'My Community')
             ->set('description', 'This is my community.')
             ->call('save')
-            ->assertSessionHas('status', 'Community created.');
-    }
-
-    public function test_redirects_to_dashboard_after_save()
-    {
-        Livewire::actingAs(User::factory()->create())
-            ->test(CreateCommunity::class)
-            ->set('name', 'My Community')
-            ->set('description', 'This is my community.')
-            ->call('save')
-            ->assertRedirect(route('dashboard'));
+            ->assertRedirect(route('community.index'));
     }
 }
